@@ -37,7 +37,7 @@ typedef struct {
 "       | ,___|\n" \
 "       |   /\n" \
 "      /____\\\n" \
-"     /     \\\n"
+"     /      \\\n"
 
 #define BART_HAPPY \
 "                |\\|\\,'\\,'\\ ,.\n" \
@@ -314,6 +314,7 @@ int main(int argc, char *argv[]) {
     MachineState m = assemble(buf, &err);
     m.pc = 0;
     m.calculator = 0;
+    m.is_neg = false;
     if (err) {
         errprint("LDC has crashed!\n");
         exit(1);
@@ -449,6 +450,11 @@ int main(int argc, char *argv[]) {
                     break;
                 }
             }
+        }
+
+        if (r == 3) {
+            errprint("The interpreter encountered an error (likely out of bounds)\n");
+            exit(1);
         }
 
         if (r == 5)

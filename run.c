@@ -6,6 +6,7 @@
 #define GRIDROW  "---------------------------------------------------------------------------------\n"
 
 #define RENDER_STRING_SIZE 2048
+#define MAX_VALUE 999
 
 #define STR_APPEND(s) for (int i=0; i<strlen(s); i++) { \
     str[str_i] = s[i]; \
@@ -20,8 +21,10 @@
 // 4 if the program has halted
 // 5 if the program wants to output its debug screen
 int step_machine(MachineState *m, int *output, int input) {
-    //dbg("running instruction in box %d: %d\n", m->pc, m->mailboxes[m->pc]);
     if (m->waiting_for_input) {
+        if (input < 0 || input > 999)
+            return 3;
+
         m->calculator = input;
         m->waiting_for_input = false;
     }
@@ -35,15 +38,23 @@ int step_machine(MachineState *m, int *output, int input) {
             break;
         case 1: // ADD
             m->calculator += m->mailboxes[operand];
+            if (m->calculator > MAX_VALUE) {
+                m->calculator = m->calculator % MAX_VALUE - 1;
+            }
             break;
         case 2: // SUB
             m->calculator -= m->mailboxes[operand];
+            if (m->calculator < 0) {
+                m->calculator = MAX_VALUE + m->calculator + 1;
+                m->is_neg = true;
+            }
             break;
         case 3: // STO
             m->mailboxes[operand] = m->calculator;
             break;
         case 5: // LDA
             m->calculator = m->mailboxes[operand];
+            m->is_neg = false;
             break;
         case 6: // BR
             m->pc = operand;
@@ -55,7 +66,7 @@ int step_machine(MachineState *m, int *output, int input) {
             }
             break;
         case 8: // BRP
-            if (m->calculator >= 0) {
+            if (!m->is_neg) {
                 m->pc = operand;
                 return 0;
             }
@@ -66,7 +77,12 @@ int step_machine(MachineState *m, int *output, int input) {
                 m->pc++;
                 return 2;
             } else if (instruction == 902) {
-                *output = m->calculator;
+                if (m->is_neg) {
+                    *output = -m->calculator;
+                } else {
+                    *output = m->calculator;
+                }
+
                 m->pc++;
                 return 1;
             } else if (instruction == 903) {

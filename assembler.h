@@ -8,8 +8,9 @@
 typedef struct MachineState {
     int mailboxes[100];
     int pc;
-    int calculator;
+    int16_t calculator;
     bool waiting_for_input;
+    bool is_neg;
 } MachineState;
 
 MachineState assemble(char *srcbuf, int *err);
