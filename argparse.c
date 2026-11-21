@@ -13,6 +13,8 @@ char *get_flag_name(Command *cmd, int flag_id) {
     return NULL;
 }
 
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
 void print_help(Command *cmd) {
     printf("%s\n", cmd->progname);
     printf("%s\n\n", cmd->description);
@@ -35,7 +37,15 @@ void print_help(Command *cmd) {
         if (pair_len > longest_flag_pair)
             longest_flag_pair = pair_len + 2;
     }
-    uint8_t description_offset = longest_flag_pair + 2;
+    char *help_str = " -h --help";
+    longest_flag_pair = MAX(longest_flag_pair, strlen(help_str)); 
+    printf("%s", help_str);
+    int padding_len = longest_flag_pair - strlen(help_str);
+
+    for (int j=0; j<padding_len+1; j++)
+        printf(" ");
+    printf(" Display this information\n");
+
     for (int i=0; i<cmd->flagc; i++) {
         printf(" %s %s", cmd->flags[i].name_short, cmd->flags[i].name_long);
         uint8_t padding_len = longest_flag_pair - flag_pair_lengths[i];
