@@ -35,13 +35,22 @@ LineReader new_line_reader(char *src) {
 }
 
 bool is_whitespace(char ch) {
-    return ch == ' ';
+    return ch == ' ' || ch == '\t';
 }
 
 void eat_whitespace(LineReader *r) {
     while (1) {
         if (r->pos >= r->src_len) {
             return;
+        }
+        if (r->src[r->pos] == '#') {
+            while (1) {
+                r->pos++;
+                if (r->pos >= r->src_len)
+                    return;
+                if (r->src[r->pos] == '\n')
+                    return;
+            }
         }
         if (!is_whitespace(r->src[r->pos])) {
             return;
@@ -78,7 +87,7 @@ Line read_line(LineReader *r) {
             l.ltype = NO_MORE_LINES;
             return l;
         }
-        if (r->src[r->pos] != ' ' && r->src[r->pos] != '\n' && r->src[r->pos] != '#') {
+        if (r->src[r->pos] != ' ' && r->src[r->pos] != '\n' && r->src[r->pos] != '#' && r->src[r->pos] != '\t') {
             break;
         }
         if (r->src[r->pos] == '#') {
@@ -116,6 +125,7 @@ Line read_line(LineReader *r) {
             parameter++;
             word_i = 0;
             eat_whitespace(r);
+
             if (parameter == 3 && r->src[r->pos] != '\n') {
                 errprint("TOO MANY PARAMETERS!!! ERROR!!!\n");
                 exit(1);

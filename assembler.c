@@ -139,7 +139,15 @@ MachineState assemble(char *srcbuf, int *err) {
         m.mailboxes[mbox] = instruction_to_code(l.inst);
         m.mailboxes[mbox] += operand;
         mbox++;
+        if (mbox > 100) {
+            errprint("Too many mailboxes were used.\n");
+            *err = 1;
+            return m;
+        }
     }
+
+    dbg("Mailboxes used: %d\n", mbox);
+
     
     if (verbose_enabled) {
         for (int i=0; i<100; i++) {

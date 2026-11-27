@@ -73,6 +73,10 @@ uint64_t run_dts_bench(MachineState m) {
 int expected_vals(int num1, int num2, int *expect) {
     expect[0] = num1;
     expect[1] = num2;
+
+    if (num1 == 0 && num2 == 0)
+        return 2;
+
     int i = 2;
     while (1) {
         num1 = num1 - (num1/100) - ((num1%100)/10) - (num1%10);
@@ -129,7 +133,7 @@ bool run_single_check(MachineState m, int i, int j) {
             which_input++;
             if (which_input > 2) {
                 pthread_mutex_lock(&mutex);
-                dbg("Detected a failed test, num1=%d, num2=%d."
+                dbg("Detected a failed test, num1=%d, num2=%d; "
                     "Program requested too many inputs", i, j);
                 pthread_mutex_unlock(&mutex);
                 return false;
@@ -137,7 +141,14 @@ bool run_single_check(MachineState m, int i, int j) {
         }
 
     }
-    return expect_i == expected_output_count;
+    if (expected_output_count != expect_i) {
+        pthread_mutex_lock(&mutex);
+        dbg("Detected a failed test, num1=%d, num2=%d; "
+            "Program procuded %d outputs, expected %d\n", i, j, expect_i, expected_output_count);
+        pthread_mutex_unlock(&mutex);
+        return false;
+    }
+    return true;
 }
 
 

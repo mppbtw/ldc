@@ -125,7 +125,15 @@ int main(int argc, char *argv[]) {
         "submissions for the Computer Systems Coursework.\n\n"
         "In no way is LDC capable of assisting users with the creation of their \n"
         "LMC programs, nor does it include any coursework solutions itself.";
-    cmd->progname = "ldc";
+    cmd->progname = 
+" __       ______   ______      \n"
+"/_/\\     /_____/\\ /_____/\\     \n"
+"\\:\\ \\    \\:::_ \\ \\\\:::__\\/     \n"
+" \\:\\ \\    \\:\\ \\ \\ \\\\:\\ \\  __   \n"
+"  \\:\\ \\____\\:\\ \\ \\ \\\\:\\ \\/_/\\  \n"
+"   \\:\\/___/\\\\:\\/.:| |\\:\\_\\ \\ \\ \n"
+"    \\_____\\/ \\____/_/ \\_____\\/ ";
+
     cmd->accept_raw_args = 0;
     cmd->flagc = 7;
     cmd->flags = (Flag*) malloc(sizeof(Flag) * (cmd->flagc));
